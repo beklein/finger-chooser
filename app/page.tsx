@@ -12,7 +12,8 @@ import {
 } from "@/components/ui/dialog"
 import { cn } from "@/lib/utils"
 
-const COUNTDOWN_MS = 3_000
+const COUNTDOWN_MS = 5_000
+const COUNTDOWN_SECONDS = COUNTDOWN_MS / 1_000
 const RESULT_MS = 2_200
 const COOLDOWN_MS = 5_000
 const WINNER_LINGER_MS = 1_200
@@ -97,8 +98,8 @@ function HelpContent() {
       <div>
         <h3 className="text-sm font-semibold text-foreground">Round flow</h3>
         <ul className="list-disc space-y-1 pl-5">
-          <li>Countdown starts automatically at 3 seconds.</li>
-          <li>Adding a new finger resets the countdown to 3.</li>
+          <li>Countdown starts automatically at 5 seconds.</li>
+          <li>Adding or lifting a finger resets the countdown to 5.</li>
           <li>One active finger is picked randomly when countdown ends.</li>
           <li>The winner lingers while cooldown runs.</li>
           <li>After cooldown, next round starts automatically with 2+ fingers.</li>
@@ -123,7 +124,7 @@ export default function Page() {
   const [resultTouches, setResultTouches] = useState<TouchPoint[]>([])
   const [winnerId, setWinnerId] = useState<number | null>(null)
   const [winnerLingering, setWinnerLingering] = useState(false)
-  const [countdownSeconds, setCountdownSeconds] = useState(3)
+  const [countdownSeconds, setCountdownSeconds] = useState(COUNTDOWN_SECONDS)
   const [countdownProgress, setCountdownProgress] = useState(0)
   const [cooldownSeconds, setCooldownSeconds] = useState(5)
 
@@ -269,7 +270,7 @@ export default function Page() {
 
   function cancelToIdle() {
     clearCountdownTimers()
-    setCountdownSeconds(3)
+    setCountdownSeconds(COUNTDOWN_SECONDS)
 
     if (phaseRef.current === "countdown") {
       setPhaseSafely("idle")
@@ -295,7 +296,7 @@ export default function Page() {
 
     clearCountdownTimers()
     setPhaseSafely("countdown")
-    setCountdownSeconds(3)
+    setCountdownSeconds(COUNTDOWN_SECONDS)
 
     const token = roundTokenRef.current + 1
     roundTokenRef.current = token
@@ -400,8 +401,13 @@ export default function Page() {
     nextTouches.delete(pointerId)
     syncTouches(nextTouches)
 
-    if (phaseRef.current === "countdown" && nextTouches.size < 2) {
-      cancelToIdle()
+    if (phaseRef.current === "countdown") {
+      if (nextTouches.size < 2) {
+        cancelToIdle()
+        return
+      }
+
+      startCountdown()
     }
   }
 
@@ -459,7 +465,7 @@ export default function Page() {
       }
 
       clearCountdownTimers()
-      setCountdownSeconds(3)
+      setCountdownSeconds(COUNTDOWN_SECONDS)
       setPhaseSafely("idle")
     }
 
@@ -523,7 +529,7 @@ export default function Page() {
           <DialogHeader>
             <DialogTitle>Finger Chooser</DialogTitle>
             <DialogDescription>
-              One touch screen, two or more fingers, one random winner after a 3-second countdown.
+              One touch screen, two or more fingers, one random winner after a 5-second countdown.
             </DialogDescription>
           </DialogHeader>
           <HelpContent />
@@ -539,7 +545,7 @@ export default function Page() {
             <h1 className="text-2xl font-semibold tracking-tight text-foreground">Mobile App Experience</h1>
             <p className="mt-3 text-sm leading-relaxed text-muted-foreground sm:text-base">
               Finger Chooser is built for touch devices. Open this page on a phone or tablet, place two or more fingers
-              on the screen, and the app picks one winner after 3 seconds.
+              on the screen, and the app picks one winner after 5 seconds.
             </p>
             <div className="mt-5 rounded-2xl border border-border/60 bg-background/70 p-4">
               <HelpContent />
