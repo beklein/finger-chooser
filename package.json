@@ -6,6 +6,8 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
+    "cf:build": "next build",
+    "deploy": "npm run cf:build && npx wrangler pages deploy out --project-name=finger-chooser --branch=main --commit-dirty=true",
     "start": "next start",
     "lint": "eslint",
     "format": "prettier --write \"**/*.{ts,tsx}\"",
