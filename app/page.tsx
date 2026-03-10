@@ -112,6 +112,12 @@ function HelpContent() {
           mobile browsers with reliable multi-touch support.
         </p>
       </div>
+      <p>
+        Made with ❤️ by{" "}
+        <a href="https://beklein.com" target="_blank" rel="noreferrer" className="underline underline-offset-2">
+          beklein.com
+        </a>
+      </p>
     </div>
   )
 }
